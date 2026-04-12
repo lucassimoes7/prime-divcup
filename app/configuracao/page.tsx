@@ -1,82 +1,117 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export default function ConfiguracaoPage() {
-  const [turnos, setTurnos] = useState(1)
-  const [idaVolta, setIdaVolta] = useState(false)
+  const [totalTimes, setTotalTimes] = useState(0)
+  const [jogosPorTime, setJogosPorTime] = useState(1)
   const [maxFolgas, setMaxFolgas] = useState(1)
-  const [tipo, setTipo] = useState("pontos")
+  const [jogosPorRodada, setJogosPorRodada] = useState(2)
+  const [repeticao, setRepeticao] = useState(false)
 
+  // Carrega times salvos
   useEffect(() => {
+    const times = JSON.parse(localStorage.getItem("times") || "[]")
+    setTotalTimes(times.length)
+
     const saved = localStorage.getItem("configCampeonato")
     if (saved) {
       const data = JSON.parse(saved)
-      setTurnos(data.turnos || 1)
-      setIdaVolta(data.idaVolta || false)
+      setJogosPorTime(data.jogosPorTime || 1)
       setMaxFolgas(data.maxFolgas || 1)
-      setTipo(data.tipo || "pontos")
+      setJogosPorRodada(data.jogosPorRodada || 2)
+      setRepeticao(data.repeticao || false)
     }
   }, [])
 
   const salvar = () => {
     const config = {
-      turnos,
-      idaVolta,
+      jogosPorTime,
       maxFolgas,
-      tipo,
+      jogosPorRodada,
+      repeticao,
     }
 
     localStorage.setItem("configCampeonato", JSON.stringify(config))
+
     alert("Configuração salva com sucesso!")
   }
 
   return (
-    <div style={{ padding: 40 }}>
-      <h1>Configuração do Campeonato</h1>
+    <div style={{ padding: 40, color: "#fff" }}>
+      <h1 style={{ fontSize: 28 }}>Configuração do Torneio</h1>
 
-      <div style={{ marginTop: 20, maxWidth: 400 }}>
+      <div style={{ marginTop: 20, maxWidth: 400, display: "flex", flexDirection: "column", gap: 15 }}>
 
+        {/* TOTAL TIMES */}
         <div>
-          <label>Turnos:</label>
+          <label>Total de times:</label>
           <input
-            type="number"
-            value={turnos}
-            onChange={(e) => setTurnos(Number(e.target.value))}
+            value={totalTimes}
+            disabled
+            style={{ width: "100%", padding: 8 }}
           />
         </div>
 
+        {/* JOGOS POR TIME */}
         <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={idaVolta}
-              onChange={() => setIdaVolta(!idaVolta)}
-            />
-            Ida e volta
-          </label>
+          <label>Jogos por time:</label>
+          <input
+            type="number"
+            value={jogosPorTime}
+            onChange={(e) => setJogosPorTime(Number(e.target.value))}
+            style={{ width: "100%", padding: 8 }}
+          />
         </div>
 
+        {/* FOLGAS */}
         <div>
-          <label>Máx. folgas seguidas:</label>
+          <label>Máx. folgas consecutivas:</label>
           <input
             type="number"
             value={maxFolgas}
             onChange={(e) => setMaxFolgas(Number(e.target.value))}
+            style={{ width: "100%", padding: 8 }}
           />
         </div>
 
+        {/* JOGOS POR RODADA */}
         <div>
-          <label>Tipo:</label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-            <option value="pontos">Pontos corridos</option>
-            <option value="mata">Mata-mata</option>
-          </select>
+          <label>Jogos por rodada (semana):</label>
+          <input
+            type="number"
+            value={jogosPorRodada}
+            onChange={(e) => setJogosPorRodada(Number(e.target.value))}
+            style={{ width: "100%", padding: 8 }}
+          />
         </div>
 
-        <button onClick={salvar} style={{ marginTop: 20 }}>
-          Salvar
+        {/* REPETIÇÃO */}
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={repeticao}
+              onChange={() => setRepeticao(!repeticao)}
+            />
+            Permitir repetição de confronto
+          </label>
+        </div>
+
+        <button
+          onClick={salvar}
+          style={{
+            marginTop: 10,
+            padding: 10,
+            background: "#22c55e",
+            border: "none",
+            borderRadius: 6,
+            cursor: "pointer"
+          }}
+        >
+          Salvar Configuração
         </button>
+
       </div>
     </div>
   )
