@@ -42,8 +42,8 @@ const { rounds } = useApp()
               <div className="round-header">
                 <h2 className="round-title">Rodada {index + 1}</h2>
                 <span className="badge">
-                  {round.matches.length} jogo
-                  {round.matches.length === 1 ? "" : "s"}
+                  {round.length} jogo
+                  {round.length === 1 ? "" : "s"}
                 </span>
               </div>
 
