@@ -1,81 +1,66 @@
-type TeamStats = {
-  name: string
-  jogos: number
-  ultimaRodada: number
-  folgasSeguidas: number
+type Match = {
+  casa: string
+  fora: string
 }
 
-export function generateSchedule(teams: string[]) {
+type Round = Match[]
+
+export function generateSchedule(teams: string[]): Round[] {
   const config = JSON.parse(localStorage.getItem("configCampeonato") || "{}")
 
   const jogosPorTime = config.jogosPorTime || 4
-  const maxFolgas = config.maxFolgas || 1
   const jogosPorRodada = config.jogosPorRodada || 4
   const repeticao = config.repeticao || false
 
   if (!teams || teams.length < 2) return []
 
-  const stats: TeamStats[] = teams.map((t) => ({
-    name: t,
-    jogos: 0,
-    ultimaRodada: -1,
-    folgasSeguidas: 0,
-  }))
+  const jogosFeitos: Record<string, number> = {}
+  const confrontos = new Set<string>()
+  const rodadas: Round[] = []
 
-  const confrontosFeitos = new Set<string>()
-  const rodadas: any[] = []
+  teams.forEach((t) => (jogosFeitos[t] = 0))
 
-  let rodadaAtual = 0
+  function podeJogar(a: string, b: string) {
+    if (a === b) return false
+    if (jogosFeitos[a] >= jogosPorTime) return false
+    if (jogosFeitos[b] >= jogosPorTime) return false
 
-  function podeJogar(a: TeamStats, b: TeamStats) {
-    if (a.name === b.name) return false
+    const chave = [a, b].sort().join("x")
 
-    if (a.jogos >= jogosPorTime || b.jogos >= jogosPorTime) return false
-
-    const chave = [a.name, b.name].sort().join("x")
-
-    if (!repeticao && confrontosFeitos.has(chave)) return false
-
-    if (a.folgasSeguidas > maxFolgas || b.folgasSeguidas > maxFolgas) return false
+    if (!repeticao && confrontos.has(chave)) return false
 
     return true
   }
 
   while (true) {
-    const disponiveis = stats.filter((t) => t.jogos < jogosPorTime)
+    const disponiveis = teams.filter((t) => jogosFeitos[t] < jogosPorTime)
 
     if (disponiveis.length < 2) break
 
-    const rodada: any[] = []
+    const rodada: Match[] = []
     const usados = new Set<string>()
 
     for (let i = 0; i < disponiveis.length; i++) {
-      const timeA = disponiveis[i]
+      const a = disponiveis[i]
 
-      if (usados.has(timeA.name)) continue
+      if (usados.has(a)) continue
 
       for (let j = i + 1; j < disponiveis.length; j++) {
-        const timeB = disponiveis[j]
+        const b = disponiveis[j]
 
-        if (usados.has(timeB.name)) continue
+        if (usados.has(b)) continue
 
-        if (podeJogar(timeA, timeB)) {
-          rodada.push({
-            casa: timeA.name,
-            fora: timeB.name,
-          })
+        if (podeJogar(a, b)) {
+          rodada.push({ casa: a, fora: b })
 
-          usados.add(timeA.name)
-          usados.add(timeB.name)
+          usados.add(a)
+          usados.add(b)
 
-          timeA.jogos++
-          timeB.jogos++
+          jogosFeitos[a]++
+          jogosFeitos[b]++
 
-          timeA.folgasSeguidas = 0
-          timeB.folgasSeguidas = 0
-
-          const chave = [timeA.name, timeB.name].sort().join("x")
-          confrontosFeitos.add(chave)
+          const chave = [a, b].sort().join("x")
+          confrontos.add(chave)
 
           break
         }
@@ -84,18 +69,35 @@ export function generateSchedule(teams: string[]) {
       if (rodada.length >= jogosPorRodada) break
     }
 
-    // Atualiza folgas
-    stats.forEach((t) => {
-      if (!usados.has(t.name)) {
-        t.folgasSeguidas++
-      }
-    })
-
     if (rodada.length === 0) break
 
     rodadas.push(rodada)
-    rodadaAtual++
   }
 
   return rodadas
+}
+
+/* ============================= */
+/* 🔥 FUNÇÕES QUE ESTAVAM FALTANDO */
+/* ============================= */
+
+export function getTeamSchedule(rounds: Round[], team: string) {
+  const jogos: any[] = []
+
+  rounds.forEach((rodada, index) => {
+    rodada.forEach((match) => {
+      if (match.casa === team || match.fora === team) {
+        jogos.push({
+          rodada: index + 1,
+          adversario: match.casa === team ? match.fora : match.casa,
+        })
+      }
+    })
+  })
+
+  return jogos
+}
+
+export function generateRoundRobin(teams: string[]) {
+  return generateSchedule(teams)
 }
