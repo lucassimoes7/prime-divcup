@@ -1,22 +1,18 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { AppProvider } from "../context/AppContext";
-
-export const metadata: Metadata = {
-  title: "Gerenciador de Campeonatos",
-  description: "Sistema para gerenciar campeonatos de futebol ou futsal."
-};
+export const metadata = {
+  title: "Prime DivCup Sorteio",
+  description: "Sistema de sorteio e gerenciamento de campeonatos",
+}
 
 export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="pt-BR">
-      <body>
-        <AppProvider>{children}</AppProvider>
+    <html lang="pt-br">
+      <body style={{ margin: 0, background: "#0f172a", color: "#fff", fontFamily: "sans-serif" }}>
+        {children}
       </body>
     </html>
-  );
+  )
 }
