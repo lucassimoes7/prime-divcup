@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
-import { useAppContext } from "../../../context/AppContext";
+import { useApp } from "../../../context/AppContext";
 import { getTeamSchedule } from "../../../lib/scheduler";
 
 export default function TeamDetailPage() {
   const params = useParams<{ teamId: string }>();
-  const { rounds, getTeamById, isLoaded } = useAppContext();
+  const { rounds, getTeamById, isLoaded } = useApp();
   const team = getTeamById(params.teamId);
 
   const schedule = useMemo(
