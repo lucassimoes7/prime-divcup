@@ -64,7 +64,7 @@ export default function RoundsPage() {
 
               {round.byes.length > 0 ? (
                 <div className="bye-block">
-                  {round.byes.map((team) => (
+                  {round.byes.map((team: any) => (
                     <div className="bye-item" key={`${round.id}-${team.id}`}>
                       <span className="muted">Folga</span>
                       <strong>{team.name}</strong>
