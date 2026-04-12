@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useAppContext } from "../../context/AppContext";
+import { useApp } from "../../context/AppContext"
 
 export default function TeamsPage() {
-  const { teams, addTeam, removeTeam } = useAppContext();
+  const { teams, addTeam, removeTeam } = useApp();
   const [teamName, setTeamName] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
