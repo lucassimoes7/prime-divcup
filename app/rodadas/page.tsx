@@ -37,10 +37,10 @@ const { rounds } = useApp()
         </section>
       ) : (
         <section className="round-list">
-          {rounds.map((round) => (
-            <article className="round-item" key={round.id}>
+          {rounds.map((round, index) => (
+            <article className="round-item" key={index}>
               <div className="round-header">
-                <h2 className="round-title">Rodada {round.number}</h2>
+                <h2 className="round-title">Rodada {index + 1}</h2>
                 <span className="badge">
                   {round.matches.length} jogo
                   {round.matches.length === 1 ? "" : "s"}
@@ -48,7 +48,7 @@ const { rounds } = useApp()
               </div>
 
               <div className="match-grid">
-                {round.matches.map((match: any) => (
+                {round.map((match: any) => (
                   <div
                     className="match-item"
                     key={`${round.id}-${match.home.id}-${match.away.id}`}
