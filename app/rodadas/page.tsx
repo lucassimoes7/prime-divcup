@@ -50,7 +50,7 @@ export default function RoundsPage() {
               </div>
 
               <div className="match-grid">
-                {round.matches.map((match) => (
+                {round.matches.map((match: any) => (
                   <div
                     className="match-item"
                     key={`${round.id}-${match.home.id}-${match.away.id}`}
