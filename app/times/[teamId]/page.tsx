@@ -12,9 +12,9 @@ export default function TeamDetailPage() {
   const team = getTeamById(params.teamId);
 
   const schedule = useMemo(
-    () => getTeamSchedule(params.teamId, rounds),
-    [params.teamId, rounds]
-  );
+  () => getTeamSchedule(rounds, params.teamId),
+  [params.teamId, rounds]
+);
 
   const totalGames = schedule.filter((item) => !item.isBye).length;
 
