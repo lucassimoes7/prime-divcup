@@ -1,63 +1,83 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { useAppContext } from "../../context/AppContext";
+import { useState, useEffect } from "react"
 
-export default function ConfigurationPage() {
-  const { teams, rounds, generateChampionship } = useAppContext();
-  const canGenerate = teams.length >= 2;
+export default function ConfiguracaoPage() {
+  const [turnos, setTurnos] = useState(1)
+  const [idaVolta, setIdaVolta] = useState(false)
+  const [maxFolgas, setMaxFolgas] = useState(1)
+  const [tipo, setTipo] = useState("pontos")
+
+  useEffect(() => {
+    const saved = localStorage.getItem("configCampeonato")
+    if (saved) {
+      const data = JSON.parse(saved)
+      setTurnos(data.turnos || 1)
+      setIdaVolta(data.idaVolta || false)
+      setMaxFolgas(data.maxFolgas || 1)
+      setTipo(data.tipo || "pontos")
+    }
+  }, [])
+
+  const salvar = () => {
+    const config = {
+      turnos,
+      idaVolta,
+      maxFolgas,
+      tipo,
+    }
+
+    localStorage.setItem("configCampeonato", JSON.stringify(config))
+    alert("Configuração salva com sucesso!")
+  }
 
   return (
-    <main className="app-shell">
-      <header className="top-nav">
-        <Link className="brand-link" href="/">
-          <span className="brand-mark">FC</span>
-          <span>Campeonato</span>
-        </Link>
-        <nav className="nav-actions" aria-label="Navegacao principal">
-          <Link className="button secondary" href="/times">
-            Times
-          </Link>
-          <Link className="button secondary" href="/rodadas">
-            Rodadas
-          </Link>
-        </nav>
-      </header>
+    <div style={{ padding: 40 }}>
+      <h1>Configuração do Campeonato</h1>
 
-      <section className="page-header">
-        <p className="page-eyebrow">Configuracao</p>
-        <h1 className="page-title">Configurar Campeonato</h1>
-        <p className="page-description">
-          Gere automaticamente a tabela no formato todos contra todos. Se a
-          quantidade de times for impar, o sistema cria uma folga por rodada.
-        </p>
-      </section>
+      <div style={{ marginTop: 20, maxWidth: 400 }}>
 
-      <section className="grid content-grid">
-        <article className="card panel">
-          <h2 className="panel-title">Geracao de rodadas</h2>
-          <p className="page-description">
-            Times cadastrados: <strong>{teams.length}</strong>
-          </p>
-          <p className="page-description">
-            Rodadas geradas: <strong>{rounds.length}</strong>
-          </p>
-          <div style={{ height: 18 }} />
-          <button
-            className="button"
-            type="button"
-            disabled={!canGenerate}
-            onClick={generateChampionship}
-          >
-            Gerar Campeonato
-          </button>
-          {!canGenerate ? (
-            <p className="page-description">
-              Cadastre pelo menos dois times para gerar o campeonato.
-            </p>
-          ) : null}
-        </article>
-      </section>
-    </main>
-  );
+        <div>
+          <label>Turnos:</label>
+          <input
+            type="number"
+            value={turnos}
+            onChange={(e) => setTurnos(Number(e.target.value))}
+          />
+        </div>
+
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={idaVolta}
+              onChange={() => setIdaVolta(!idaVolta)}
+            />
+            Ida e volta
+          </label>
+        </div>
+
+        <div>
+          <label>Máx. folgas seguidas:</label>
+          <input
+            type="number"
+            value={maxFolgas}
+            onChange={(e) => setMaxFolgas(Number(e.target.value))}
+          />
+        </div>
+
+        <div>
+          <label>Tipo:</label>
+          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+            <option value="pontos">Pontos corridos</option>
+            <option value="mata">Mata-mata</option>
+          </select>
+        </div>
+
+        <button onClick={salvar} style={{ marginTop: 20 }}>
+          Salvar
+        </button>
+      </div>
+    </div>
+  )
 }
