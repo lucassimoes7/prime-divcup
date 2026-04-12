@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useAppContext } from "../../context/AppContext";
-
+import { useApp } from "../../context/AppContext"
 export default function RoundsPage() {
-  const { rounds } = useAppContext();
-
+const { rounds } = useApp()
   return (
     <main className="app-shell">
       <header className="top-nav">
