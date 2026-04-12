@@ -9,6 +9,7 @@ export default function ConfiguracaoPage() {
   const [maxFolgas, setMaxFolgas] = useState(1)
   const [jogosPorRodada, setJogosPorRodada] = useState(2)
   const [repeticao, setRepeticao] = useState(false)
+  const router = useRouter()
 
   // Carrega times salvos
   useEffect(() => {
