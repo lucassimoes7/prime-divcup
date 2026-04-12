@@ -1,54 +1,28 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { useAppContext } from "../context/AppContext";
+import Link from "next/link"
 
-export default function HomePage() {
-  const { championshipName, teams, rounds, isLoaded } = useAppContext();
-  const status = rounds.length > 0 ? "Gerado" : "Nao gerado";
-
+export default function Home() {
   return (
-    <main className="app-shell">
-      <section className="hero">
-        <div className="hero-logo" aria-label="Logo do campeonato">
-          FC
-        </div>
-        <div>
-          <p className="page-eyebrow">Gerenciador de campeonatos</p>
-          <h1>{championshipName}</h1>
-          <p>
-            Organize times, gere rodadas todos contra todos e acompanhe a
-            sequencia de jogos de cada equipe em um painel simples e rapido.
-          </p>
-        </div>
-      </section>
+    <div style={{ padding: 40, textAlign: "center" }}>
+      <h1 style={{ fontSize: 42 }}>Prime DivCup Sorteio</h1>
+      <p style={{ marginTop: 10 }}>
+        Sistema de geração de campeonatos completo
+      </p>
 
-      <section className="grid stats-grid" aria-label="Resumo do campeonato">
-        <article className="card stat-card">
-          <p className="stat-label">Total de times</p>
-          <p className="stat-value">{isLoaded ? teams.length : "-"}</p>
-        </article>
-        <article className="card stat-card">
-          <p className="stat-label">Total de rodadas</p>
-          <p className="stat-value">{isLoaded ? rounds.length : "-"}</p>
-        </article>
-        <article className="card stat-card">
-          <p className="stat-label">Status</p>
-          <p className="stat-value">{isLoaded ? status : "-"}</p>
-        </article>
-      </section>
+      <div style={{ marginTop: 40, display: "flex", gap: 20, justifyContent: "center" }}>
+        <Link href="/times">
+          <button>Gerenciar Times</button>
+        </Link>
 
-      <section className="grid action-grid" aria-label="Acoes principais">
-        <Link className="button" href="/times">
-          Gerenciar Times
+        <Link href="/configuracao">
+          <button>Configurar Campeonato</button>
         </Link>
-        <Link className="button" href="/configuracao">
-          Configurar Campeonato
+
+        <Link href="/rodadas">
+          <button>Ver Rodadas</button>
         </Link>
-        <Link className="button" href="/rodadas">
-          Ver Rodadas
-        </Link>
-      </section>
-    </main>
-  );
+      </div>
+    </div>
+  )
 }
