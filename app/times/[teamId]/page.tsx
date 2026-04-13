@@ -8,8 +8,11 @@ import { getTeamSchedule } from "../../../lib/scheduler";
 
 export default function TeamDetailPage() {
   const params = useParams<{ teamId: string }>();
-  const { rounds, getTeamById, isLoaded } = useApp();
-  const team = getTeamById(params.teamId);
+  const { rounds, teams } = useApp();
+  const team = teams.find((t) => t.id === params.teamId)
+    if (!team) {
+  return <div>Time não encontrado</div>
+};
 
   const schedule = useMemo(
   () => getTeamSchedule(rounds, params.teamId),
