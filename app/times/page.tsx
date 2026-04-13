@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { useApp } from "../../context/AppContext"
+import { useApp } from "../../context/AppContext";
 
 export default function TeamsPage() {
   const { teams, addTeam, removeTeam } = useApp();
@@ -10,21 +10,35 @@ export default function TeamsPage() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const wasAdded = addTeam(teamName);
 
-    if (wasAdded) {
-      setTeamName("");
+    const name = teamName.trim();
+
+    // 🔒 validação
+    if (!name) return;
+
+    const alreadyExists = teams.some(
+      (t) => t.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (alreadyExists) {
+      alert("Esse time já foi adicionado");
+      return;
     }
+
+    addTeam(name);
+    setTeamName("");
   }
 
   return (
     <main className="app-shell">
+      {/* HEADER */}
       <header className="top-nav">
         <Link className="brand-link" href="/">
-          <span className="brand-mark">FC</span>
-          <span>Campeonato</span>
+          <span className="brand-mark">⚽</span>
+          <span>Prime DivCup</span>
         </Link>
-        <nav className="nav-actions" aria-label="Navegacao principal">
+
+        <nav className="nav-actions">
           <Link className="button secondary" href="/configuracao">
             Configurar
           </Link>
@@ -34,33 +48,36 @@ export default function TeamsPage() {
         </nav>
       </header>
 
+      {/* HEADER PAGE */}
       <section className="page-header">
         <p className="page-eyebrow">Times</p>
         <h1 className="page-title">Gerenciar Times</h1>
         <p className="page-description">
-          Cadastre as equipes participantes. Ao adicionar ou remover um time, as
-          rodadas geradas sao limpas para manter a tabela correta.
+          Cadastre as equipes participantes do campeonato.
         </p>
       </section>
 
+      {/* FORM */}
       <section className="card panel">
         <h2 className="panel-title">Novo time</h2>
+
         <form className="input-row" onSubmit={handleSubmit}>
           <input
             className="input"
             value={teamName}
-            onChange={(event) => setTeamName(event.target.value)}
+            onChange={(e) => setTeamName(e.target.value)}
             placeholder="Digite o nome do time e pressione Enter"
-            aria-label="Nome do time"
           />
+
           <button className="button" type="submit">
             Adicionar
           </button>
         </form>
 
+        {/* LISTA */}
         {teams.length === 0 ? (
           <div className="empty-state">
-            Nenhum time cadastrado ainda. Comece pelo primeiro participante.
+            Nenhum time cadastrado ainda.
           </div>
         ) : (
           <ul className="list">
@@ -69,9 +86,9 @@ export default function TeamsPage() {
                 <Link className="team-name" href={`/times/${team.id}`}>
                   {team.name}
                 </Link>
+
                 <button
                   className="button danger"
-                  type="button"
                   onClick={() => removeTeam(team.id)}
                 >
                   Remover
