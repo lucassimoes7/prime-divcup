@@ -51,11 +51,11 @@ const { rounds } = useApp()
                 {round.map((match: any) => (
                   <div
                     className="match-item"
-                    key={`${round.id}-${match.home.id}-${match.away.id}`}
+                    key={`${index}-${match.casa}-${match.fora}`}
                   >
-                    <strong>{match.home.name}</strong>
-                    <span className="versus">VS</span>
-                    <strong>{match.away.name}</strong>
+                    <strong>{match.casa}</strong>
+                    <span>VS</span>
+                    <strong>{match.fora}</strong>
                   </div>
                 ))}
               </div>
