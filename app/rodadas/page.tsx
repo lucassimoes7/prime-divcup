@@ -60,16 +60,7 @@ const { rounds } = useApp()
                 ))}
               </div>
 
-              {round.byes.length > 0 ? (
-                <div className="bye-block">
-                  {round.byes.map((team: any) => (
-                    <div className="bye-item" key={`${round.id}-${team.id}`}>
-                      <span className="muted">Folga</span>
-                      <strong>{team.name}</strong>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
+              
             </article>
           ))}
         </section>
