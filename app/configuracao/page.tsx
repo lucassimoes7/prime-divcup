@@ -1,151 +1,171 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import Link from "next/link";
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useApp } from "../../context/AppContext";
+import { TournamentConfig, normalizeConfig } from "../../lib/scheduler";
 
 export default function ConfiguracaoPage() {
-  const router = useRouter()
-
-  const [totalTimes, setTotalTimes] = useState(0)
-  const [jogosPorTime, setJogosPorTime] = useState(1)
-  const [maxFolgas, setMaxFolgas] = useState(1)
-  const [jogosPorRodada, setJogosPorRodada] = useState(2)
-  const [repeticao, setRepeticao] = useState(false)
+  const router = useRouter();
+  const { config, saveConfig, generateWithConfig } = useApp();
+  const [draft, setDraft] = useState<TournamentConfig>(config);
 
   useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("times") || "[]")
+    setDraft(config);
+  }, [config]);
 
-    if (Array.isArray(data)) {
-      setTotalTimes(data.length)
-    } else if (data?.times) {
-      setTotalTimes(data.times.length)
-    }
+  function updateDraft<K extends keyof TournamentConfig>(
+    key: K,
+    value: TournamentConfig[K],
+  ) {
+    setDraft((currentDraft) => ({
+      ...currentDraft,
+      [key]: value,
+    }));
+  }
 
-    const saved = localStorage.getItem("configCampeonato")
-    if (saved) {
-      const config = JSON.parse(saved)
-      setJogosPorTime(config.jogosPorTime || 1)
-      setMaxFolgas(config.maxFolgas || 1)
-      setJogosPorRodada(config.jogosPorRodada || 2)
-      setRepeticao(config.repeticao || false)
-    }
-  }, [])
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    saveConfig(normalizeConfig(draft));
+    router.push("/");
+  }
 
-  const salvar = () => {
-    const config = {
-      jogosPorTime,
-      maxFolgas,
-      jogosPorRodada,
-      repeticao,
-    }
-
-    localStorage.setItem("configCampeonato", JSON.stringify(config))
-
-    // volta automaticamente pra home
-    router.push("/")
+  function saveAndDraw() {
+    const normalized = normalizeConfig(draft);
+    generateWithConfig(normalized);
+    router.push("/rodadas");
   }
 
   return (
-    <div style={{ padding: 40, color: "#fff" }}>
-      
-      {/* BOTÃO VOLTAR */}
-      <button
-        onClick={() => router.push("/")}
-        style={{
-          marginBottom: 20,
-          padding: 10,
-          background: "#1e293b",
-          border: "none",
-          borderRadius: 6,
-          cursor: "pointer",
-          color: "#fff"
-        }}
-      >
-        ← Voltar
-      </button>
+    <main className="app-shell">
+      <header className="top-nav">
+        <Link className="brand-link" href="/">
+          <span className="brand-mark">PD</span>
+          <span>Prime DivCup</span>
+        </Link>
+        <nav className="nav-actions" aria-label="Navegacao principal">
+          <Link className="button secondary" href="/times">
+            Times
+          </Link>
+          <Link className="button secondary" href="/rodadas">
+            Confrontos
+          </Link>
+        </nav>
+      </header>
 
-      <h1 style={{ fontSize: 28 }}>Configuração do Torneio</h1>
+      <section className="page-header">
+        <p className="page-eyebrow">Configuracao</p>
+        <h1 className="page-title">Regras do torneio</h1>
+        <p className="page-description">
+          Ajuste quantidade de times, jogos por time, jogos por rodada, folgas
+          consecutivas e repeticao de confronto antes de sortear.
+        </p>
+      </section>
 
-      <div style={{
-        marginTop: 20,
-        maxWidth: 400,
-        display: "flex",
-        flexDirection: "column",
-        gap: 15
-      }}>
+      <form className="config-layout" onSubmit={handleSubmit}>
+        <section className="card panel">
+          <h2 className="panel-title">Participantes e confrontos</h2>
+          <div className="form-grid">
+            <label className="field">
+              <span>Total de times</span>
+              <input
+                className="input"
+                min={2}
+                max={64}
+                type="number"
+                value={draft.teamCount}
+                onChange={(event) => updateDraft("teamCount", Number(event.target.value))}
+              />
+            </label>
 
-        {/* TOTAL TIMES */}
-        <div>
-          <label>Total de times:</label>
-          <input
-            value={totalTimes}
-            disabled
-            style={{ width: "100%", padding: 10, background: "#020617", color: "#fff" }}
-          />
-        </div>
+            <label className="field">
+              <span>Jogos por time</span>
+              <input
+                className="input"
+                min={1}
+                max={63}
+                type="number"
+                value={draft.gamesPerTeam}
+                onChange={(event) =>
+                  updateDraft("gamesPerTeam", Number(event.target.value))
+                }
+              />
+            </label>
 
-        {/* JOGOS POR TIME */}
-        <div>
-          <label>Jogos por time:</label>
-          <input
-            type="number"
-            value={jogosPorTime}
-            onChange={(e) => setJogosPorTime(Number(e.target.value))}
-            style={{ width: "100%", padding: 10 }}
-          />
-        </div>
+            <label className="field">
+              <span>Jogos por rodada</span>
+              <input
+                className="input"
+                min={1}
+                max={32}
+                type="number"
+                value={draft.matchesPerRound}
+                onChange={(event) =>
+                  updateDraft("matchesPerRound", Number(event.target.value))
+                }
+              />
+            </label>
 
-        {/* FOLGAS */}
-        <div>
-          <label>Máx. folgas consecutivas:</label>
-          <input
-            type="number"
-            value={maxFolgas}
-            onChange={(e) => setMaxFolgas(Number(e.target.value))}
-            style={{ width: "100%", padding: 10 }}
-          />
-        </div>
+            <label className="field">
+              <span>Maximo de folgas seguidas</span>
+              <input
+                className="input"
+                min={1}
+                max={32}
+                type="number"
+                value={draft.maxConsecutiveByes}
+                onChange={(event) =>
+                  updateDraft("maxConsecutiveByes", Number(event.target.value))
+                }
+              />
+            </label>
+          </div>
 
-        {/* JOGOS POR RODADA */}
-        <div>
-          <label>Jogos por rodada:</label>
-          <input
-            type="number"
-            value={jogosPorRodada}
-            onChange={(e) => setJogosPorRodada(Number(e.target.value))}
-            style={{ width: "100%", padding: 10 }}
-          />
-        </div>
-
-        {/* REPETIÇÃO */}
-        <div>
-          <label>
+          <label className="toggle-row">
             <input
               type="checkbox"
-              checked={repeticao}
-              onChange={() => setRepeticao(!repeticao)}
+              checked={draft.allowRematches}
+              onChange={(event) =>
+                updateDraft("allowRematches", event.target.checked)
+              }
             />
-            Permitir repetição de confronto
+            <span>Permitir repeticao de confronto</span>
           </label>
-        </div>
+        </section>
 
-        <button
-          onClick={salvar}
-          style={{
-            marginTop: 10,
-            padding: 12,
-            background: "#22c55e",
-            border: "none",
-            borderRadius: 6,
-            cursor: "pointer",
-            color: "#000",
-            fontWeight: "bold"
-          }}
-        >
-          Salvar Configuração
-        </button>
+        <section className="card panel">
+          <h2 className="panel-title">Previsao do sorteio</h2>
 
-      </div>
-    </div>
-  )
+          <div className="rule-preview">
+            <div>
+              <span className="muted">Total previsto</span>
+              <strong>
+                {Math.floor((draft.teamCount * draft.gamesPerTeam) / 2)} jogos
+              </strong>
+            </div>
+            <div>
+              <span className="muted">Capacidade por rodada</span>
+              <strong>
+                Ate {Math.min(draft.matchesPerRound, Math.floor(draft.teamCount / 2))}
+              </strong>
+            </div>
+            <div>
+              <span className="muted">Ordem exibida</span>
+              <strong>Jogo 1, Jogo 2...</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="config-actions">
+          <button className="button secondary" type="submit">
+            Salvar
+          </button>
+          <button className="button" type="button" onClick={saveAndDraw}>
+            Salvar e sortear
+          </button>
+        </section>
+      </form>
+    </main>
+  );
 }

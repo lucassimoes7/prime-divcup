@@ -3,100 +3,125 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useApp } from "../../context/AppContext";
+import { getTeamStats } from "../../lib/scheduler";
 
 export default function TeamsPage() {
-  const { teams, addTeam, removeTeam } = useApp();
+  const { teams, rounds, addTeam, removeTeam, updateTeamName } = useApp();
   const [teamName, setTeamName] = useState("");
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
     const name = teamName.trim();
 
-    // 🔒 validação
     if (!name) return;
 
     const alreadyExists = teams.some(
-      (t) => t.name.toLowerCase() === name.toLowerCase()
+      (team) => team.name.toLowerCase() === name.toLowerCase(),
     );
 
     if (alreadyExists) {
-      alert("Esse time já foi adicionado");
+      alert("Esse time ja foi adicionado");
       return;
     }
 
-    addTeam(name);
-    setTeamName("");
+    const wasAdded = addTeam(name);
+
+    if (wasAdded) {
+      setTeamName("");
+    }
   }
 
   return (
     <main className="app-shell">
-      {/* HEADER */}
       <header className="top-nav">
         <Link className="brand-link" href="/">
-          <span className="brand-mark">⚽</span>
+          <span className="brand-mark">PD</span>
           <span>Prime DivCup</span>
         </Link>
-
-        <nav className="nav-actions">
+        <nav className="nav-actions" aria-label="Navegacao principal">
           <Link className="button secondary" href="/configuracao">
             Configurar
           </Link>
           <Link className="button secondary" href="/rodadas">
-            Rodadas
+            Confrontos
           </Link>
         </nav>
       </header>
 
-      {/* HEADER PAGE */}
       <section className="page-header">
         <p className="page-eyebrow">Times</p>
-        <h1 className="page-title">Gerenciar Times</h1>
+        <h1 className="page-title">Times definidos</h1>
         <p className="page-description">
-          Cadastre as equipes participantes do campeonato.
+          Os nomes comecam como Time 1, Time 2 e assim por diante. Quando voce
+          altera um nome aqui, ele aparece atualizado nos confrontos e na tela
+          individual do time.
         </p>
       </section>
 
-      {/* FORM */}
       <section className="card panel">
-        <h2 className="panel-title">Novo time</h2>
+        <div className="panel-heading">
+          <div>
+            <p className="page-eyebrow">Cadastro rapido</p>
+            <h2 className="panel-title">Adicionar participante</h2>
+          </div>
+          <span className="badge">{teams.length} times</span>
+        </div>
 
         <form className="input-row" onSubmit={handleSubmit}>
           <input
             className="input"
             value={teamName}
-            onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Digite o nome do time e pressione Enter"
+            onChange={(event) => setTeamName(event.target.value)}
+            placeholder={`Time ${teams.length + 1}`}
+            aria-label="Nome do time"
           />
-
           <button className="button" type="submit">
             Adicionar
           </button>
         </form>
+      </section>
 
-        {/* LISTA */}
-        {teams.length === 0 ? (
-          <div className="empty-state">
-            Nenhum time cadastrado ainda.
-          </div>
-        ) : (
-          <ul className="list">
-            {teams.map((team) => (
-              <li className="team-item" key={team.id}>
-                <Link className="team-name" href={`/times/${team.id}`}>
-                  {team.name}
+      <section className="team-table" aria-label="Lista de times">
+        {teams.map((team, index) => {
+          const stats = getTeamStats(rounds, team.id);
+
+          return (
+            <article className="card team-row" key={team.id}>
+              <div className="team-number">{index + 1}</div>
+              <div className="team-editor">
+                <label htmlFor={`team-${team.id}`}>Nome do time</label>
+                <input
+                  id={`team-${team.id}`}
+                  className="input"
+                  value={team.name}
+                  onBlur={(event) => {
+                    if (!event.target.value.trim()) {
+                      updateTeamName(team.id, `Time ${index + 1}`);
+                    }
+                  }}
+                  onChange={(event) => updateTeamName(team.id, event.target.value)}
+                />
+              </div>
+              <div className="team-mini-stats">
+                <span>{stats.games} jogos</span>
+                <span>{stats.byes} folgas</span>
+              </div>
+              <div className="team-actions">
+                <Link className="button secondary" href={`/times/${team.id}`}>
+                  Ver agenda
                 </Link>
-
                 <button
                   className="button danger"
+                  type="button"
+                  disabled={teams.length <= 2}
                   onClick={() => removeTeam(team.id)}
                 >
                   Remover
                 </button>
-              </li>
-            ))}
-          </ul>
-        )}
+              </div>
+            </article>
+          );
+        })}
       </section>
     </main>
   );

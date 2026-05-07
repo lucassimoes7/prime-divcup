@@ -1,102 +1,131 @@
-"use client"
+"use client";
 
-import { useParams } from "next/navigation"
-import { useMemo } from "react"
-import Link from "next/link"
-import { useApp } from "../../../context/AppContext"
-import { getTeamSchedule } from "../../../lib/scheduler"
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useMemo } from "react";
+import { useApp } from "../../../context/AppContext";
+import { getTeamSchedule, getTeamStats } from "../../../lib/scheduler";
 
 export default function TeamDetailPage() {
-  const params = useParams<{ teamId: string }>()
-  const { rounds, teams } = useApp()
+  const params = useParams<{ teamId: string }>();
+  const { rounds, getTeamById, isLoaded } = useApp();
+  const team = getTeamById(params.teamId);
+  const schedule = useMemo(
+    () => getTeamSchedule(rounds, params.teamId),
+    [params.teamId, rounds],
+  );
+  const stats = useMemo(
+    () => getTeamStats(rounds, params.teamId),
+    [params.teamId, rounds],
+  );
 
-  const team = teams.find((t) => t.id === params.teamId)
-
-  const schedule = useMemo(() => {
-    if (!team) return []
-    return getTeamSchedule(rounds, team.name)
-  }, [team, rounds])
-
-  const totalGames = schedule.length
-
-  if (!team) {
+  if (isLoaded && !team) {
     return (
       <main className="app-shell">
         <section className="card panel">
-          <p className="page-eyebrow">Não encontrado</p>
-          <h1 className="page-title">Time não encontrado</h1>
+          <p className="page-eyebrow">Nao encontrado</p>
+          <h1 className="page-title">Time nao encontrado</h1>
           <p className="page-description">
-            O time solicitado não existe ou foi removido.
+            O time solicitado nao existe mais ou foi removido do campeonato.
           </p>
-          <div style={{ height: 18 }} />
-          <Link className="button" href="/times">
-            Voltar para Times
-          </Link>
+          <div className="button-row">
+            <Link className="button" href="/times">
+              Voltar para Times
+            </Link>
+          </div>
         </section>
       </main>
-    )
+    );
   }
 
   return (
     <main className="app-shell">
-      {/* HEADER */}
       <header className="top-nav">
         <Link className="brand-link" href="/">
-          <span className="brand-mark">⚽</span>
+          <span className="brand-mark">PD</span>
           <span>Prime DivCup</span>
         </Link>
-
-        <nav className="nav-actions">
+        <nav className="nav-actions" aria-label="Navegacao principal">
           <Link className="button secondary" href="/times">
             Times
           </Link>
           <Link className="button secondary" href="/rodadas">
-            Rodadas
+            Confrontos
           </Link>
         </nav>
       </header>
 
-      {/* HEADER PAGE */}
       <section className="page-header">
-        <p className="page-eyebrow">Detalhe do time</p>
-        <h1 className="page-title">{team.name}</h1>
+        <p className="page-eyebrow">Confrontos por time</p>
+        <h1 className="page-title">{team?.name ?? "Carregando time"}</h1>
         <p className="page-description">
-          Veja os jogos deste time no campeonato.
+          Veja em qual rodada o time joga, contra quem joga, a ordem do jogo na
+          rodada e quando fica de folga.
         </p>
       </section>
 
-      {/* STATS */}
       <section className="grid detail-stats">
         <article className="card stat-card">
-          <p className="stat-label">Total de jogos</p>
-          <p className="stat-value">{totalGames}</p>
+          <p className="stat-label">Jogos</p>
+          <p className="stat-value">{stats.games}</p>
         </article>
-
         <article className="card stat-card">
-          <p className="stat-label">Rodadas jogadas</p>
-          <p className="stat-value">{schedule.length}</p>
+          <p className="stat-label">Folgas</p>
+          <p className="stat-value">{stats.byes}</p>
+        </article>
+        <article className="card stat-card">
+          <p className="stat-label">Maior sequencia de folgas</p>
+          <p className="stat-value">{stats.maxByeSequence}</p>
         </article>
       </section>
 
-      {/* LISTA */}
       <section className="card panel">
-        <h2 className="panel-title">Jogos</h2>
+        <div className="panel-heading">
+          <div>
+            <p className="page-eyebrow">Agenda</p>
+            <h2 className="panel-title">Rodada por rodada</h2>
+          </div>
+          <span className="badge">{schedule.length} rodadas</span>
+        </div>
 
         {schedule.length === 0 ? (
           <div className="empty-state">
-            Nenhum jogo gerado ainda.
+            Nenhuma rodada gerada para este time ainda.
           </div>
         ) : (
           <ol className="opponent-sequence">
-            {schedule.map((item, index) => (
-              <li key={index}>
-                <span className="badge">Rodada {item.rodada}</span>
-                <span>Contra {item.adversario}</span>
-              </li>
-            ))}
+            {schedule.map((item) => {
+              const opponent = item.opponentTeamId
+                ? getTeamById(item.opponentTeamId)
+                : undefined;
+
+              return (
+                <li
+                  className={item.status === "bye" ? "schedule-bye" : undefined}
+                  key={`${params.teamId}-${item.roundNumber}`}
+                >
+                  <span className="badge">Rodada {item.roundNumber}</span>
+                  {item.status === "bye" ? (
+                    <span>Folga</span>
+                  ) : (
+                    <span>
+                      Joga contra{" "}
+                      {opponent ? (
+                        <Link className="text-link" href={`/times/${opponent.id}`}>
+                          {opponent.name}
+                        </Link>
+                      ) : (
+                        "adversario"
+                      )}{" "}
+                      no Jogo {item.slot}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ol>
         )}
       </section>
     </main>
-  )
+  );
 }
