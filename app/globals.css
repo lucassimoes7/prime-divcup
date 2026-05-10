@@ -1,16 +1,16 @@
 :root {
-  --background: #111313;
-  --surface: #171a1a;
-  --surface-2: #202424;
-  --card: #1b1f1f;
-  --card-border: rgba(231, 236, 228, 0.12);
-  --text: #f4f7f1;
-  --muted: #aab3aa;
-  --accent: #74d680;
-  --accent-2: #57c7d4;
-  --warning: #f2bd5c;
-  --danger: #e35d6a;
-  --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  --background: #050812;
+  --surface: #08101d;
+  --surface-2: #101a2b;
+  --card: #0b1423;
+  --card-border: rgba(181, 231, 255, 0.18);
+  --text: #f7fbff;
+  --muted: #9fb2c7;
+  --accent: #62d8ff;
+  --accent-2: #e8f8ff;
+  --warning: #4bb8ef;
+  --danger: #ff5d78;
+  --shadow: 0 18px 54px rgba(0, 0, 0, 0.42);
 }
 
 * {
@@ -27,7 +27,8 @@ body {
   margin: 0;
   color: var(--text);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 280px),
+    linear-gradient(180deg, rgba(98, 216, 255, 0.12), transparent 320px),
+    linear-gradient(135deg, #050812 0%, #0a1220 46%, #03050b 100%),
     var(--background);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -109,16 +110,17 @@ button {
   font-weight: 850;
 }
 
-.brand-mark {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+.brand-logo {
+  display: block;
+  width: 46px;
+  height: 46px;
   border-radius: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #071313;
-  font-weight: 950;
+  object-fit: cover;
+  object-position: center 38%;
+  background: #030711;
+  box-shadow:
+    0 0 0 1px rgba(232, 248, 255, 0.18),
+    0 10px 26px rgba(98, 216, 255, 0.22);
 }
 
 .nav-actions,
@@ -178,7 +180,7 @@ button {
   border-radius: 8px;
   padding: clamp(24px, 5vw, 54px);
   background:
-    linear-gradient(135deg, rgba(116, 214, 128, 0.16), transparent 48%),
+    linear-gradient(135deg, rgba(98, 216, 255, 0.16), transparent 48%),
     var(--surface);
   box-shadow: var(--shadow);
 }
@@ -206,8 +208,21 @@ button {
   border: 1px solid rgba(242, 189, 92, 0.24);
   border-radius: 8px;
   padding: 28px;
-  background: #262017;
+  background:
+    linear-gradient(180deg, rgba(232, 248, 255, 0.08), transparent),
+    #07101e;
   box-shadow: var(--shadow);
+}
+
+.hero-logo-image {
+  width: min(220px, 74%);
+  aspect-ratio: 1;
+  align-self: center;
+  justify-self: center;
+  border-radius: 8px;
+  object-fit: cover;
+  object-position: center 38%;
+  box-shadow: 0 22px 54px rgba(98, 216, 255, 0.22);
 }
 
 .live-board strong {
@@ -220,7 +235,7 @@ button {
   height: 12px;
   border-radius: 999px;
   background: var(--warning);
-  box-shadow: 0 0 0 8px rgba(242, 189, 92, 0.12);
+  box-shadow: 0 0 0 8px rgba(98, 216, 255, 0.14);
 }
 
 .grid {
@@ -305,7 +320,7 @@ button {
   border-radius: 8px;
   padding: 0 18px;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #071313;
+  color: #06101c;
   font-weight: 850;
   transition:
     transform 150ms ease,
@@ -315,7 +330,7 @@ button {
 
 .button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 28px rgba(87, 199, 212, 0.18);
+  box-shadow: 0 12px 28px rgba(98, 216, 255, 0.2);
 }
 
 .button.secondary {
@@ -359,13 +374,13 @@ button {
   border-radius: 8px;
   padding: 0 12px;
   outline: none;
-  background: #101212;
+  background: #050a13;
   color: var(--text);
 }
 
 .input:focus {
-  border-color: rgba(116, 214, 128, 0.74);
-  box-shadow: 0 0 0 3px rgba(116, 214, 128, 0.12);
+  border-color: rgba(98, 216, 255, 0.76);
+  box-shadow: 0 0 0 3px rgba(98, 216, 255, 0.14);
 }
 
 .empty-state,
@@ -385,9 +400,9 @@ button {
 
 .notice {
   border-style: solid;
-  border-color: rgba(242, 189, 92, 0.32);
-  color: #f7d99b;
-  background: rgba(242, 189, 92, 0.08);
+  border-color: rgba(98, 216, 255, 0.32);
+  color: #dff7ff;
+  background: rgba(98, 216, 255, 0.08);
 }
 
 .info-list {
@@ -434,11 +449,11 @@ button {
   display: inline-flex;
   min-height: 30px;
   align-items: center;
-  border: 1px solid rgba(116, 214, 128, 0.3);
+  border: 1px solid rgba(98, 216, 255, 0.34);
   border-radius: 8px;
   padding: 0 10px;
-  background: rgba(116, 214, 128, 0.1);
-  color: #cbf8d0;
+  background: rgba(98, 216, 255, 0.1);
+  color: #dff7ff;
   font-size: 0.84rem;
   font-weight: 850;
   white-space: nowrap;
@@ -473,7 +488,7 @@ button {
   height: 40px;
   place-items: center;
   border-radius: 8px;
-  background: #252b25;
+  background: #06182a;
   color: var(--accent);
   font-weight: 900;
 }
@@ -602,11 +617,11 @@ button {
 }
 
 .bye-chip {
-  border: 1px solid rgba(87, 199, 212, 0.22);
+  border: 1px solid rgba(98, 216, 255, 0.26);
   border-radius: 8px;
   padding: 8px 10px;
-  background: rgba(87, 199, 212, 0.08);
-  color: #bff3f8;
+  background: rgba(98, 216, 255, 0.08);
+  color: #dff7ff;
   font-weight: 760;
 }
 
@@ -632,7 +647,7 @@ button {
 }
 
 .opponent-sequence .schedule-bye {
-  background: rgba(242, 189, 92, 0.08);
+  background: rgba(98, 216, 255, 0.08);
 }
 
 @media (max-width: 860px) {

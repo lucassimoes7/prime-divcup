@@ -13,7 +13,7 @@ export default function Home() {
     <main className="app-shell">
       <header className="top-nav">
         <Link className="brand-link" href="/">
-          <span className="brand-mark">PD</span>
+          <img className="brand-logo" src="/prime-divcup-logo.png" alt="Prime DivCup" />
           <span>Prime DivCup</span>
         </Link>
         <nav className="nav-actions" aria-label="Navegacao principal">
@@ -43,6 +43,7 @@ export default function Home() {
           </p>
         </div>
         <div className="live-board">
+          <img className="hero-logo-image" src="/prime-divcup-logo.png" alt="Prime DivCup" />
           <span className="live-dot" />
           <span>{rounds.length > 0 ? "Sorteio gerado" : "Aguardando sorteio"}</span>
           <strong>{totalMatches} jogos</strong>

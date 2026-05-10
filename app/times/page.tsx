@@ -35,7 +35,7 @@ export default function TeamsPage() {
     <main className="app-shell">
       <header className="top-nav">
         <Link className="brand-link" href="/">
-          <span className="brand-mark">PD</span>
+          <img className="brand-logo" src="/prime-divcup-logo.png" alt="Prime DivCup" />
           <span>Prime DivCup</span>
         </Link>
         <nav className="nav-actions" aria-label="Navegacao principal">

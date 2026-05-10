@@ -29,7 +29,7 @@ export default function LoginPage() {
     <main className="login-shell">
       <section className="login-panel card">
         <div className="brand-lockup">
-          <span className="brand-mark">PD</span>
+          <img className="brand-logo login-logo" src="/prime-divcup-logo.png" alt="Prime DivCup" />
           <div>
             <p className="page-eyebrow">Prime DivCup</p>
             <h1>Entrar no sorteio</h1>
